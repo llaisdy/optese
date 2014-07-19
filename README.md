@@ -1,4 +1,0 @@
-optese
-======
-
-Optimal Text Selection
