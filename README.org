@@ -1,0 +1,109 @@
+* Optese: Optimal Text Selection
+
+Optese implements the 'greedy-set-cover' algorithm from Cormen /et al./ (1990) [CORMEN90] for optimal text selection.
+
+** History
+
+I initially wrote optese in 2005 in python for the [[http://www.e-gymraeg.org/wispr/index_en.htm][WISPR]] project at the University of Wales, Bangor.  However, the code seems no longer to be available at their site.  As I receive occasional requests for the code, I thought I should host optese myself here.  The wispr tag contains the original code (and README) as was hosted by UWB.
+
+** Overview
+
+Optese is used when you want to extract a training data set from a larger corpus of language data.  The training data set should be as small as possible, while including as many as possible of the target features of the data (e.g. diphones, trigrams, etc.).
+
+The definition of GREEDY-SET-COVER in CORMEN90 goes like this (p. 975):
+
+#+BEGIN_SRC
+
+GREEDY-SET-COVER(X, F)
+
+Unseen <- X
+Collected <- 0
+while Unseen != 0:
+    select an S from F that maximises |intersection(S, Unseen)|
+    Unseen <- Unseen - S
+    Collected <- union(Collected, {S})
+return Collected
+
+#+END_SRC
+
+(Haven't worked out how to render set notation in org-mode on github.)
+
+X is a finite set of features (e.g. of diphones) and F is a family of subsets of X (e.g. of utterances, where each utterance is represented as a set of diphones).
+
+The decision step (4) chooses the utterance (following the example) with the most "unseen" diphones.  These diphones are removed from the Unseen set and the process is repeated.  The process terminates when there are no more diphones left to collect.
+
+Optese is essentially greedy-set-cover.  The main difference is that the feature set X is virtual: 
+
+#+BEGIN_SRC
+
+OPTESE(F)
+
+Collected <- 0
+while F != 0:
+    select an S from F that maximises |S|
+    F <- F - S
+    Collected <- union(Collected, {S})
+return Collected
+
+#+END_SRC
+
+The decision step chooses the utterance with the most unseen features.  Then, on every member of F, these features are marked as seen, and members with no unseen features are removed from F.
+
+Optese is like this because with language data the feature set (e.g. ngrams) can be very large, and will often not be fully covered.  The point is to optimise the data available.
+
+** Usage
+
+Optese is flexible over different kinds of data and feature by encapsulating these in the element behaviour element_behaviour.erl.  Two example element types are provided.
+
+The demo test is optese_SUITE shows an example usage:
+
+#+BEGIN_SRC erlang
+
+demo(Config) ->
+    DataDir = ?config(data_dir, Config),
+    Fn = DataDir ++ "it_IT",
+    Mod = el_string_trigram,
+    Es = lists:map(fun Mod:new/1, read_file_to_strings(Fn)),
+    C = corpus:new(Es, Mod),
+    O = corpus:optese(C),
+    Ss = lists:map(fun(E) -> Mod:raw(E) end, O), 
+    PrivDir = ?config(priv_dir, Config),
+    write_strings_to_file(Ss, PrivDir ++ Fn ++ ".opt").
+
+#+END_SRC
+
+** Roadmap
+
+*** 0.0.1
+
+- sequential
+- collect one example of each feature
+
+*** 0.1.x
+
+- parallelise as much as possible
+- min_coverage = non_neg_integer()
+- min_examples_to_get = non_neg_integer()
+
+- min_coverage: only include features which appear in the corpus this many times.
+- min_examples_to_get: in the optimal sub-corpus, (try to) include this many of each feature.
+- Obvs, min_coverage must be >= min_examples_to_get.
+
+*** 1.0.0
+
+0.1.x all done
+
+*** 2.x
+
+Try with other programming languages?
+
+It might be interesting to implement optese in a constraint programming language.  Candidates might include:
+
+- Prolog, [[http://eclipseclp.org/][ECLiPSe]], [[http://potassco.sourceforge.net/][Answer Set Programming]]
+- [[http://www.minizinc.org/][MiniZinc]]
+- [[http://mozart.github.io/][Mozart]]
+
+** References
+
+[CORMEN90]  Cormen, Thomas, H., Charles E. Leiserson, and Ronald L. Rivest. (1990).  *Introduction to Algorithms*.  Cambridge, Ma.: MIT Press.
+

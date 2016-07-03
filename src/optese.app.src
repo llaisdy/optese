@@ -1,0 +1,11 @@
+%%-*- mode: erlang -*-
+%% Copyright (c) 2016 Llaisdy
+
+{application, optese,
+ [{description, "Optimal Text Selection"},
+  {vsn, "0.0.1"},
+  {id, "git"},
+  {modules, []},
+  {registered, []},
+  {applications, [kernel, stdlib, liga]}
+ ]}.

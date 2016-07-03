@@ -1,5 +1,11 @@
+*.beam
+*.o
+*.plt
 *~
-__pycache__/
-*.py[cod]
-docs/_build/
-
+.concrete/DEV_MODE
+.eunit
+.rebar
+deps
+ebin
+erl_crash.dump
+rel/example_project

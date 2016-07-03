@@ -1,0 +1,5 @@
+-type corpus() :: list(element()).
+-type element() :: term().
+-type feature() :: term().
+-type feature_count() :: {feature(), non_neg_integer()}.
+-type feature_sort_spec() :: {feat|freq, asc|desc}.
