@@ -79,19 +79,31 @@ demo(Config) ->
 - sequential
 - collect one example of each feature
 
-*** 0.1.x
+*** TODO 0.1: sequential vs parallel
 
-- parallelise as much as possible
+tests:
+- seq vs par results need to be compared
+- optese subsets should be similar (identical? maybe not necessarily)
+- parallel should be faster, esp with large datasets
+
+Optese subsets are similar.
+
+Parallel is about four times *slower*.  Think this might be because the sequential processing (in feature_dict/2 & rescore_elements/3) is almost all done using the lists module.  Spinning up processes and collecting results might ave more overhead than just using C. 
+
+*** 0.2: coverage
+
 - min_coverage = non_neg_integer()
-- min_examples_to_get = non_neg_integer()
-
 - min_coverage: only include features which appear in the corpus this many times.
+
+*** 0.3: examples
+
+- min_examples_to_get = non_neg_integer()
 - min_examples_to_get: in the optimal sub-corpus, (try to) include this many of each feature.
 - Obvs, min_coverage must be >= min_examples_to_get.
 
 *** 1.0.0
 
-0.1.x all done
+0.* all done
 
 *** 2.x
 
@@ -105,5 +117,5 @@ It might be interesting to implement optese in a constraint programming language
 
 ** References
 
-[CORMEN90]  Cormen, Thomas, H., Charles E. Leiserson, and Ronald L. Rivest. (1990).  *Introduction to Algorithms*.  Cambridge, Ma.: MIT Press.
+[CORMEN90]  Cormen, Thomas, H., Charles E. Leiserson, and Ronald L. Rivest. (1990).  /Introduction to Algorithms/.  Cambridge, Ma.: MIT Press.
 
